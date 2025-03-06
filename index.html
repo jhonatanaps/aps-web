@@ -1,79 +1,43 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1"> 
-    <title>Sistema Unificado APS - Web</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Sistema Unificado APS - Versão Web (HTML/JS/CSS)</h1>
-        </header>
+function showTab(tabId) {
+    let tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => tab.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+}
 
-        <nav>
-            <button class="tab-button active" onclick="openTab(event, 'bichos')">Bichos</button>
-            <button class="tab-button" onclick="openTab(event, 'pedras')">Pedras</button>
-            <button class="tab-button" onclick="openTab(event, 'dezenas')">Dezenas</button>
-            <button class="tab-button" onclick="openTab(event, 'gerador')">Gerador M/C</button>
-        </nav>
+function gerarNumeros() {
+    let milhar = document.getElementById('milhar').value;
+    let centena = document.getElementById('centena').value;
+    
+    let milharGerada = milhar ? milhar + Math.floor(Math.random() * 1000) : 'Sem entrada';
+    let centenaGerada = centena ? centena + Math.floor(Math.random() * 100) : 'Sem entrada';
+    
+    document.getElementById('milhares').innerText = milharGerada;
+    document.getElementById('centenas').innerText = centenaGerada;
+}
 
-        <!-- Aba Bichos -->
-        <section id="bichos" class="tab-content active">
-            <h2>Bichos</h2>
-            <div class="bicho-buttons">
-                <!-- Botões dos Bichos -->
-                <button onclick="selecionarBicho('Avestruz')">Avestruz</button>
-                <button onclick="selecionarBicho('Águia')">Águia</button>
-                <button onclick="selecionarBicho('Burro')">Burro</button>
-                <button onclick="selecionarBicho('Borboleta')">Borboleta</button>
-                <button onclick="selecionarBicho('Cachorro')">Cachorro</button>
-            </div>
-            <h3>Contadores:</h3>
-            <ul id="contadores-bichos"></ul>
-        </section>
-
-        <!-- Aba Pedras -->
-        <section id="pedras" class="tab-content">
-            <h2>Pedras</h2>
-            <div class="pedras-buttons">
-                <button onclick="selecionarPedra(0)">0</button>
-                <button onclick="selecionarPedra(1)">1</button>
-                <button onclick="selecionarPedra(2)">2</button>
-                <button onclick="selecionarPedra(3)">3</button>
-                <button onclick="selecionarPedra(4)">4</button>
-            </div>
-            <h3>Contadores:</h3>
-            <ul id="contadores-pedras"></ul>
-        </section>
-
-        <!-- Aba Dezenas -->
-        <section id="dezenas" class="tab-content">
-            <h2>Dezenas</h2>
-            <div class="dezenas-buttons">
-                <button onclick="selecionarDezena(10)">10</button>
-                <button onclick="selecionarDezena(20)">20</button>
-                <button onclick="selecionarDezena(30)">30</button>
-                <button onclick="selecionarDezena(40)">40</button>
-                <button onclick="selecionarDezena(50)">50</button>
-            </div>
-            <h3>Contadores:</h3>
-            <ul id="contadores-dezenas"></ul>
-        </section>
-
-        <!-- Aba Gerador -->
-        <section id="gerador" class="tab-content">
-            <h2>Gerador de Milhares e Centenas</h2>
-            <p>Pedras de Milhar: <input type="text" id="milhar"></p>
-            <p>Pedras de Centena: <input type="text" id="centena"></p>
-            <button onclick="gerarMilharesCentenas()">Gerar</button>
-            <h3>Milhares Geradas:</h3>
-            <p id="milhares-geradas"></p>
-            <h3>Centenas Geradas:</h3>
-            <p id="centenas-geradas"></p>
-        </section>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
+document.addEventListener("DOMContentLoaded", () => {
+    const bichos = ["Avestruz", "Águia", "Burro", "Borboleta", "Cachorro", "Cabra", "Carneiro", "Camelo", "Cobra", "Coelho", "Cavalo", "Elefante", "Galo", "Gato", "Jacaré", "Leão", "Macaco", "Porco", "Pavão", "Peru", "Touro", "Tigre", "Urso", "Veado", "Vaca"];
+    
+    let bichoButtons = document.getElementById("bicho-buttons");
+    let contadorLista = document.getElementById("contador-lista");
+    let contadores = {};
+    
+    bichos.forEach(bicho => {
+        let btn = document.createElement("button");
+        btn.innerText = bicho;
+        btn.onclick = () => {
+            contadores[bicho] = (contadores[bicho] || 0) + 1;
+            atualizarContadores();
+        };
+        bichoButtons.appendChild(btn);
+    });
+    
+    function atualizarContadores() {
+        contadorLista.innerHTML = "";
+        for (let bicho in contadores) {
+            let item = document.createElement("li");
+            item.innerText = `${bicho}: ${contadores[bicho]}`;
+            contadorLista.appendChild(item);
+        }
+    }
+});
