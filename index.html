@@ -1,43 +1,173 @@
-function showTab(tabId) {
-    let tabs = document.querySelectorAll('.tab-content');
-    tabs.forEach(tab => tab.style.display = 'none');
-    document.getElementById(tabId).style.display = 'block';
-}
-
-function gerarNumeros() {
-    let milhar = document.getElementById('milhar').value;
-    let centena = document.getElementById('centena').value;
-    
-    let milharGerada = milhar ? milhar + Math.floor(Math.random() * 1000) : 'Sem entrada';
-    let centenaGerada = centena ? centena + Math.floor(Math.random() * 100) : 'Sem entrada';
-    
-    document.getElementById('milhares').innerText = milharGerada;
-    document.getElementById('centenas').innerText = centenaGerada;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    const bichos = ["Avestruz", "Águia", "Burro", "Borboleta", "Cachorro", "Cabra", "Carneiro", "Camelo", "Cobra", "Coelho", "Cavalo", "Elefante", "Galo", "Gato", "Jacaré", "Leão", "Macaco", "Porco", "Pavão", "Peru", "Touro", "Tigre", "Urso", "Veado", "Vaca"];
-    
-    let bichoButtons = document.getElementById("bicho-buttons");
-    let contadorLista = document.getElementById("contador-lista");
-    let contadores = {};
-    
-    bichos.forEach(bicho => {
-        let btn = document.createElement("button");
-        btn.innerText = bicho;
-        btn.onclick = () => {
-            contadores[bicho] = (contadores[bicho] || 0) + 1;
-            atualizarContadores();
-        };
-        bichoButtons.appendChild(btn);
-    });
-    
-    function atualizarContadores() {
-        contadorLista.innerHTML = "";
-        for (let bicho in contadores) {
-            let item = document.createElement("li");
-            item.innerText = `${bicho}: ${contadores[bicho]}`;
-            contadorLista.appendChild(item);
-        }
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Sistema Unificado APS - Bichos, Pedras, Dezenas, Gerador (HTML)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      background-color: #f4f4f4;
     }
-});
+    h1 {
+      text-align: center;
+      font-size: 22px;
+    }
+    #loginArea {
+      border: 1px solid #ccc;
+      padding: 15px;
+      max-width: 90%;
+      margin: 20px auto;
+      background: white;
+      text-align: center;
+    }
+    input {
+      width: 90%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    button {
+      padding: 10px 15px;
+      margin-top: 10px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 200px;
+    }
+    #tabs {
+      display: none; /* só fica visível após login */
+      max-width: 95%;
+      margin: auto;
+      background: white;
+      padding: 15px;
+    }
+    .tab-menu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 5px;
+      padding-bottom: 10px;
+    }
+    .tab-menu button {
+      flex: 1;
+      max-width: 120px;
+      font-size: 14px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .grid-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 5px;
+    }
+    .grid-buttons button {
+      padding: 8px;
+      font-size: 14px;
+      flex: 1;
+      max-width: 90px;
+    }
+    .contador-area, .tabela-area {
+      width: 100%;
+      overflow-x: auto;
+      text-align: center;
+      margin: 10px auto;
+    }
+    .tabela-area table {
+      width: 100%;
+      border-collapse: collapse;
+      white-space: nowrap;
+    }
+    .tabela-area th, .tabela-area td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+    }
+    .status-area {
+      text-align: center;
+      font-weight: bold;
+      padding: 10px 0;
+    }
+    .btn-desfazer {
+      display: block;
+      width: 80%;
+      margin: 10px auto;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Sistema Unificado APS (HTML, CSS, JS)</h1>
+
+<div id="loginArea">
+  <h3>Login</h3>
+  <label>Usuário:
+    <input type="text" id="userInput" />
+  </label>
+  <br>
+  <label>Senha:
+    <input type="password" id="passInput" />
+  </label>
+  <br>
+  <button onclick="fazerLogin()">Entrar</button>
+</div>
+
+<div id="tabs">
+  <div class="tab-menu">
+    <button onclick="abrirAba('bichos')">Bichos</button>
+    <button onclick="abrirAba('pedras')">Pedras</button>
+    <button onclick="abrirAba('dezenas')">Dezenas</button>
+    <button onclick="abrirAba('gerador')">Gerador M/C</button>
+  </div>
+
+  <div class="tab-content" id="tab-bichos">
+    <h2>Aba Bichos</h2>
+    <div class="grid-buttons" id="bichosButtons"></div>
+    <div class="contador-area" id="bichosContador"></div>
+    <div class="tabela-area" id="bichosTabelas"></div>
+    <div class="status-area">
+      <span id="bichoFrequente">Bicho mais frequente: Nenhum</span><br>
+      <span id="bichoMenosFrequente">Bicho menos frequente: Todos</span>
+    </div>
+    <button class="btn-desfazer" onclick="desfazerAcaoBichos()">Desfazer Bichos</button>
+  </div>
+
+  <div class="tab-content" id="tab-pedras">
+    <h2>Aba Pedras (0..9)</h2>
+    <div class="grid-buttons" id="pedrasButtons"></div>
+    <div class="contador-area" id="pedrasContador"></div>
+    <div class="tabela-area" id="pedrasTabelas"></div>
+    <div class="status-area">
+      <span id="pedraFrequente">Pedra mais frequente: Nenhuma</span><br>
+      <span id="pedraMenosFrequente">Pedra menos frequente: Todas</span>
+    </div>
+    <button class="btn-desfazer" onclick="desfazerAcaoPedras()">Desfazer Pedras</button>
+  </div>
+</div>
+
+<script>
+function fazerLogin() {
+  const user = document.getElementById("userInput").value;
+  const pass = document.getElementById("passInput").value;
+  if (user === "admin" && pass === "123") {
+    document.getElementById("loginArea").style.display = "none";
+    document.getElementById("tabs").style.display = "block";
+  } else {
+    alert("Usuário ou senha incorretos!");
+  }
+}
+
+function abrirAba(nome) {
+  document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+  document.getElementById("tab-" + nome).classList.add("active");
+}
+</script>
+
+</body>
+</html>
